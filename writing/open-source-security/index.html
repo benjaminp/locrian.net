@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Benjamin Peterson">
+<meta name="description" content="Dealing with security issues is my least favorite part of open&ndash;source.">
+<title>Security Issues and Volunteers</title>
+<link rel="icon" href="/static/img/favicon.png">
+<link rel="stylesheet" href="/static/style/main.css">
+</head>
+<body>
+
+<h1>Security Issues and Volunteers</h1>
+<span class="byline">by <a href="/">Benjamin Peterson</a><br>published <time>2016-01-18</time></span>
+
+<p>I&rsquo;ve been responding to CPython security reports (what gets sent to security@python.org) for more than half a decade. In this post, I explain the frustrating aspects of dealing with security issues as a volunteer.
+
+<p>Poorly written and invalid bug reports are a fact of open&ndash;source life. CPython receives plenty through <a href="https://bugs.python.org">bugs.python.org</a>. Thankfully, there are also many volunteers around to gently explain to newbies that, for example, <code>0.6 + 0.3</code> equaling <code>0.899999999</code> is just the way floating&ndash;point arithmetic works. The work of triaging security bug reports, though, falls on a small group of people by design. The signal&ndash;to&ndash;noise ratio is much worse than normal bugs; most reports sent to us are completely bogus. python.org, in particular, attracts technically&ndash;illiterate people armed with automatic security scanners. (Someone once reported that python.org was pwned and hosting &ldquo;malicious&rdquo; binaries, which turned out to be signed Python Windows installers.) At the same time, missing a real vulnerability is unacceptable. Consequently, someone has to scrutinize every bug report consisting of nothing but screenshots of <code>CMD.EXE</code>. Unsurprisingly, there usually isn&rsquo;t any vulnerability.
+
+<p>The discovery of a legitimate security bug triggers a number of tasks: <ul><li>Write and test a fix for the issue in coordination with the owner of the vulnerable code. Backport the fix to older releases, which may have completely different code. (CPython presently supports 5 branches with security fixes.) Ensure the fix causes minimal compatibiltiy breakage.<li>Look for and address any similar vulnerabilities.<li>Write up a disclosure report and request a CVE number.<li>Provide early notification to distributors.<li>Make the security releases and announcements.</ul>
+
+<p>I participate in open&ndash;source work largely for the pleasure of writing useful software. It&rsquo;s normally gratifying to implement a new feature or fix an obnoxious bug. In contrast, I extract scant joy from the above proceedings, which easily suck up hours of my and other&rsquo;s free time. Users are unhappy because they have to drop everything and upgrade. They&rsquo;re particularly unhappy if the security fix breaks their programs. A security disclosure brings negative attention to a project, which is stressful for the community.
+
+<p>One of the final tasks is to confirm with the reporter than their bug has been fixed and thank them. Commonly, graditude is met with an inquiry about how much their bounty will be. I appreciate the ingenuity required to find many security issues, but the clueless entitlement of some bug reporters vexes me. (Multiple times, on learning that CPython will not pay them a bounty, reporters have asked if they can at least get a T-shirt or a place of honor in some &ldquo;Hall of Fame&rdquo; they imagine we have.) Bounties make sense for companies preferring that if vulnerabilities in their software are being sold, they be the ones purchasing them. Unfortunately, some people believe they deserve several thousand dollars from a volunteer open&ndash;source community for finding a buffer overflow.
+
+<p>There is often a public shaming of projects with security vulnerabilities. Shame is appropriate tool to force makers of <a href="https://code.google.com/p/google-security-research/issues/detail?id=693">antivirus software that backdoors your browser</a> to clean up their act. In the open&ndash;source world, however, shaming demotivates volunteers, which is counterproductive to fixing security issues. We need your empathy&mdash;or at least your money&mdash;to do our best by our users.
+
+</body>
+</html>

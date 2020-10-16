@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Benjamin Peterson">
+<meta name="description" content="Integer overflow should cause programs to crash by default.">
+<title>Integer Overflow is a Menace</title>
+<link rel="icon" href="/static/img/favicon.png">
+<link rel="stylesheet" href="/static/style/main.css">
+</head>
+<body>
+
+<h1>Integer Overflow is a Menace</h1>
+<span class="byline">by <a href="/">Benjamin Peterson</a><br>published 2015-02-15</span>
+
+<p>Consider the following C function, which allocates an array of 64-bit integers:
+<pre><code>uint64_t* allocate_list(size_t nelms) {
+    size_t memsize = nelms*sizeof(uint64_t);
+    return malloc(memsize);
+}</code></pre>
+<p>This simple function has a serious bug. If <code>nelms</code> is larger than <code>SIZE_MAX/4</code>, the multiplication will overflow and wrap around modulo <code>SIZE_MAX + 1</code>. As a result, the function will allocate much less memory than expected. The unlucky caller will probably end up writing to memory it doesn&rsquo;t own, a serious security vulnerability.
+
+<p>Integer overflow behavior in most system programming languages makes every arithmetical operation a potential foot gun. In addition to <a href="http://stackoverflow.com/questions/2913618/how-is-integer-overflow-exploitable">security problems</a>, integer overflows can arise during computations with even relatively small values and cause <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-read-all-about-it-nearly.html">easily-overlooked bugs in bread-and-butter algorithms</a>.
+
+<p>In most programming languages with fixed-width integers, unsigned integers overflow by wrapping around modulo their maximum value. Signed integer overflow behavior varies more. In the case of C and C++, signed overflow is infamously <a href="https://en.wikipedia.org/wiki/Undefined_behavior">undefined</a>. In theory, this means a program can cause <a href="http://catb.org/jargon/html/N/nasal-demons.html">small demons to fly out of your nose</a> if signed overflow happens. The practical effect these days is that clever C compilers optimize by assuming signed overflow doesn&rsquo;t occur, which causes <a href="https://lwn.net/Articles/511259/">bugs in technically-incorrect C code</a>.
+
+<p>The undefined behavior of signed overflow also means detecting it is difficult to accomplish in a standards-compliant way. Instead of doing an (illegal) signed arithmetic operation and then checking if it overflowed, one must write obscure code like this:
+<pre><code>int add_safely(int a, int b) {
+    /* Perform arithmetic with unsigned integers. */
+    int res = (int)((unsigned int)a + (unsigned int)b);
+    if (res^a &lt; 0 && res^b &lt; 0) {
+        /* Operation overflowed. */
+        fputs("result overflows", stderr);
+        abort();
+    }
+    return res;
+}</code></pre>
+<p>(Spend some time convincing yourself that&rsquo;s correct in all cases.) Detecting overflow for signed multiplication is even trickier. CPython currently <a href="https://hg.python.org/cpython/file/e55f955659bc/Objects/intobject.c#l500">uses double multiplication</a>. Frustratingly, many architectures have native ways of detecting overflow, which are inaccessible to standard C. Standards-compliant overflow detection generally yields suboptimal assembly. Some relief may be coming as <a href="https://gcc.gnu.org/onlinedocs/gcc/Integer-Overflow-Builtins.html">GCC</a> and <a href="http://clang.llvm.org/docs/LanguageExtensions.html#checked-arithmetic-builtins">Clang</a> have recently added extensions that make it easier to detect overflow.
+
+<p>Modern systems languages like Rust and Go tend to a define a signed overflow to wrap around like unsigned overflow does. This is only a slight improvement over undefined behavior. Although it prevents eager compilers from optimizing by assuming signed overflow does not happen, hardly any code is prepared to deal with wraparound arithmetic. Consequently, most of the nasty integer overflow bugs remain possible.
+
+<p>A preferable default overflow behavior for both signed and unsigned integers would be to simply abort the program. Overflows would still be bugs&mdash;crashes certainly aren&rsquo;t desirable&mdash;but at least they would&rsquo;t lead to security holes or quiet data corruption.
+
+<p>There is the issue of performance with the crash-on-overflow scheme. Checking for overflow after every arithmetic operation isn&rsquo;t free, though the overhead could likely be brought down to only a <a href="http://blog.regehr.org/archives/1154">few percent</a> assuming the <a href="http://danluu.com/integer-overflow/">compiler cooperates</a>. Adding systemic overhead for safety has precedent in the C world. For example, several Linux distributions including <a href="https://wiki.ubuntu.com/Security/Features#stack-protector">Ubuntu</a> and <a href="https://fedorahosted.org/fesco/ticket/1128">Fedora</a> enable <a href="http://lwn.net/Articles/584225/">buffer overflow protection</a>, which adds several instructions to many functions. The performance degradation for that appears to have been minimal.
+
+<p>Wraparound overflow behavior does have its uses. If overflow crashed by default, there should be syntax to explicitly opt in to wraparound overflow behavior. Something like this could work:
+<pre><code>overflow(wrap) {
+    /* Operations are done with wrapping. */
+    result = some*fancy + arithmetic - expr;
+}</code></pre>
+<p>This syntax forces the programmer to explicitly request and think about handling wraparound behavior. More importantly, it alerts readers that the rules of arithmetic have been altered. Performance sensitive code could remove overflow checking with this syntax once it handles overflows correctly.
+
+<p>There&rsquo;s, of course, no real hope of changing the integer overflow behavior of established languages. (Though, the silver lining of C signed overflow being undefined behavior is that GCC and Clang would be perfectly within their rights to start crashing programs with signed overflow. In fact, the <code>-ftrapv</code> flag does exactly this.) The next generation of system languages can learn from the sins of C and make integer overflow fail loudly by default.
+
+</body>
+</html>
