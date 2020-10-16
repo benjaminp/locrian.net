@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Benjamin Peterson">
+<meta name="description" content="Benjamin Peterson&rsquo;s homepage, containing his writing, contact information, and manifold idiosyncrasies.">
+<meta name=viewport content="width=650">
+<title>The Homepage of Benjamin Peterson</title>
+<link rel="icon" href="/static/img/favicon.png">
+<link rel="stylesheet" href="/static/style/main.css">
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+<h1>Benjamin&rsquo;s Homepage</h1>
+<img src="/static/img/locrian.svg" width="398" height="104" alt="A treble clef with quarter notes: b c d e f g a b">
+<p>I hight &ldquo;Benjamin&rdquo;. I manipulate software. My email address is benjamin at this domain.
+
+<h2>Thoughts</h2>
+<ul>
+<li><a href="/writing/open-source-security/">Security Issues and Volunteers</a>
+<li><a href="/writing/integer-overflow/">A plea</a> for saner integer overflow behavior.
+</ul>
+
+<h2>Assorted quotes from the math world</h2>
+<p><q>Inquiring minds must know!</q>&mdash;Mikhail Kapranov
+<p><q cite="http://www.ams.org/mathscinet-getitem?mr=125113">Apparently readers seek vengeance on other readers when they turn into authors.</q>&mdash;Iacopo Barsotti
+<p><q cite="https://dx.doi.org/10.1007/BF01446613">Die ganzen Zahlen hat der liebe Gott gemacht, alles andere ist Menschenwerk.</q>&mdash;Leopold Kronecker
+<p><q cite="https://dx.doi.org/10.1007/s12220-009-9090-y">[Pu] was recalled to the mainland after the communists ousted Chiang Kaishek in ’49. Pu was henceforth confined to research in fuzzy topology in the
+service of the people.</q>&mdash;Horowitz, Katz, and Katz
+<p><q cite="http://www.ams.org/notices/201009/rtx100901106p.pdf">There are crystals of all kinds of substances: sodium, sulfur, modules, rings, relative schemes, etc.</q>&mdash;Grothendieck
+<p><q cite="http://www.jmilne.org/math/CourseNotes/iAG.pdf">An alternative approach is to use [Grothendieck] universes, but this requires assuming additional set-theoretic axioms. The reader is invited to ignore such questions.</q>&mdash;James Milne
+<p><q cite="https://dx.doi.org/10.1090/S0273-0979-2012-01390-3">&hellip;standard methods are stymied by the possibility of an exceptional zero, violating the Riemann hypothesis, lying very close to 1. Such a zero does not exist&mdash;but this cannot be proved. The usual proof of Linnik’s theorem&hellip;establishes an &lsquo;exceptional zero repulsion&rsquo; principle, akin to proving that at most one of Santa Claus and the Tooth Fairy exist.</q>&mdash;Frank Thorne
+<p><q cite="https://dx.doi.org/10.1007/978-1-4757-3828-5">The geometry of Banach spaces lies in darkness and has attracted the attention of many talented research mathematicians.</q>&mdash;John Bligh Conway
+<p><q cite="http://dx.doi.org/10.1007/BF02547518">The problem is most easily grasped when stated in the language of cricket.</q>&mdash;Hardy and Littlewood
+<p><q cite="https://dx.doi.org/10.2307/2323522">The mathematics that comes from the &lsquo;baroque&rsquo; inbreeding of the work of people with bad taste is often ugly and doomed to quick oblivion. The instinctive good taste of the geniuses who led the way is needed to guide the rest of us, and when we don't let it, we get generalization for the sake of generalization. We get what I have heard Zygmund call centipede mathematics (remove 99 legs and see what it can do); we get the elaborate elaborations of Baire category theory in fuzzy topological semigroup.</q>&mdash;Paul Richard Halmos
+<p><q cite="https://books.google.com/books?id=WdbWpEjLU7sC">Je me détourne avec effroi et horreur de cette plaie lamentable des fonctions continues qui n&rsquo;ont point de dérivées.</q>&mdash;Charles Hermite
+
+<h2>BSD</h2>
+<div id="bsd">$$\lim_{s\to 1}\frac{L_E(s)}{(s - 1)^r} = \frac{2^r\Omega\#Ш(E/\mathbb{Q})R(E/\mathbb{Q})\prod_pc_p}{\#E_{\mathrm{tors}}(\mathbb{Q})^2}\style{font-size: 250%; color: red;}{?}$$</div>
+<button id="boldface-button">Barrett&ndash;Serre Mode</button>
+<script>
+document.getElementById("boldface-button").addEventListener("click", (function () {
+    return MathJax.startup.promise.then(() => {
+        let e = document.getElementById("bsd");
+        let bsd = MathJax.startup.document.getMathItemsWithin(e)[0];
+        bsd.math = bsd.math.replace(/\bmathbb\b/g, "mathbf");
+        bsd.reset();
+        return MathJax.typesetPromise([e])
+    }).catch((e) => console.log(e.message));;
+}));
+</script>
+</body>
+</html>
